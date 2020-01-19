@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+ <mapper namespace="kr.icia.mapper.ReviewMapper">
+ 
+ <select id="getList" resultType="kr.icia.domain.ReviewVO">
+ <![CDATA[
+  select
+  *
+  from ARK2_review where num > 0 
+       
+           ]]>
+ </select>
+ 
+ <insert id="register">
+ <![CDATA[
+ insert into ARK2_review(num,
+ gdsthumbimg,
+ title,
+ content,
+ gdsImg,
+ writer)
+ values (seq_review.nextval,
+ #{gdsthumbimg},
+ #{title},
+ #{content},
+ #{gdsImg},
+ #{writer})
+ ]]>
+ </insert>
+ 
+
+ 
+ 
+ 
+ 	<select id="read" resultType="kr.icia.domain.ReviewVO">
+	    select * from ARK2_review where num=#{num}
+ 	</select>	
+ 
+ 	<delete id="delete">
+ 	delete ARK2_review where num=#{num}
+ 	</delete>
+ 	
+ 	<update id="update">
+ 	update ARK2_review 
+ 	set title=#{title}, 
+ 	content=#{content},
+ 	writer=#{writer},
+ 	ttdate = sysdate,
+ 	gdsthumbimg=#{gdsthumbimg}
+ 	
+ 	where num = #{num}
+ 	</update>
+ 	
+ 	<update id ="count">
+	update ARK2_review
+	set count = count +1
+	where num = #{num}
+	</update>
+	
+	<select id="getListWithPaging" resultType="kr.icia.domain.ReviewVO">
+	<![CDATA[
+	select num , title, content, writer, ttdate, count, gdsthumbimg
+	from (select /*+INDEX_DESC(ARK2_review pk_ARK_review)*/
+	rownum rn, num, title, content, writer, ttdate,count,gdsthumbimg
+	from ARK2_review 
+	where rownum <= #{pageNum} * #{amount}) 
+	where rn > (#{pageNum}-1) * #{amount}
+	]]>
+	
+	</select>
+	
+	<select id ="getTotalCount" resultType="int">
+	select count(num) from ARK2_review where num > 0
+	</select>
+	
+	<!-- 댓글  -->
+	<insert id="registReply">
+ 	 insert into ARK2_reply (num, userId, repNum, repCon)
+     values (#{num}, #{userId}, seq_ARK2_reply.nextval, #{repCon})
+    </insert>
+ 
+	<select id="replyList" resultType="kr.icia.domain.ARK_ReplyVO">
+	 select
+     r.num, r.userId, r.repNum, r.repCon, r.repDate, r.userid ,m.name as userName
+  	 from ARK2_reply r
+     inner join ark_newmember2 m
+         on r.userId = m.id
+     where num = #{num}
+	</select>
+ 
+ 	<delete id="deleteReplyAll">
+ 	 	delete ARK2_reply
+     where repNum = repNum
+ 	</delete>
+ 
+	<delete id="deleteReply">
+ 	delete ARK2_reply
+     where repNum = #{repNum}
+	</delete>
+ 
+ 	<delete id="deleteAll">
+		delete from ARK2_reply where num =#{num}
+	</delete>
+  
+ 	<update id="modifyReply">
+ 	update ARK2_reply
+     set
+         repCon = #{repCon}
+     where repNum = #{repNum}
+         and userId = #{userId}
+	</update>
+	
+	 <update id="updateReplyCnt">
+	update ARK2_review set replycnt=replycnt+#{amount}
+	where num=#{num}
+	</update> 
+	
+<!-- 	<select id="list" resultType="kr.icia.domain.GoodsVO">
+select
+    g.gdsNum,g.gdsthumbimg
+        from tbl_goods g
+            inner join ARK2_review c
+                on g.gdsNum = c.gdsNum           
+            where gdsthumbimg = #{gdsthumbimg}
+</select> -->
+	
+<select id="Category" resultType="kr.icia.domain.CategoryVO">
+select level, cateName, cateCode, cateCodeRef from goods_category
+    start with cateCodeRef is null connect by prior cateCode = cateCodeRef
+
+</select>	
+	
+	
+ </mapper>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- 인터페이스와 매핑  -->
+  <mapper namespace="kr.icia.mapper.ProductMapper"> 
+	
+	<!-- 상품 전체 목록 호출 -->
+	<select id="getAllProduct" resultType="kr.icia.domain.ProductVO">	
+	select pronum,proname,proprice,procontent,catecode from ark_product_info order by pronum desc
+	</select>
+    
+    <!-- 상품 지정 목록 호출 -->
+	<select id="getProductData" resultType="kr.icia.domain.ProductVO">	
+	
+	</select>
+	
+	<!-- 상품 카테고리 정보 -->
+	<select id="getCategory" resultType="kr.icia.domain.CategoryVO">
+	select level, cateName, cateCode, cateCodeRef from ark_cates
+	start with cateCodeRef is null connect by prior cateCode = cateCodeRef
+	</select>
+	
+<!--  
+		상품 조회 
+	<select id="getProductView" resultType="kr.icia.domain.ProductVO">
+	select id,procontent,proname,proprice,prostock,proinfo,prodate,catecode
+	from ark_product_info
+	where pronum = #{pronum}
+	</select> 
+-->
+
+	<!-- 상품 조회  + 카테고리 조인-->
+	<select id="getProductView" resultType="kr.icia.domain.ProductViewVO">
+	<![CDATA[	
+	select p.pronum,p.id, p.proname, p.catecode, c.catename, c.catecoderef, proprice, prostock, proinfo, prodate 
+	from ark_product_info p join ark_cates c
+	on p.catecode = c.catecode where p.pronum = #{pronum}
+	]]>
+	</select>
+	
+	
+	<!-- 상품 등록 -->
+	<insert id="getRegister">
+	insert into ark_product_info(pronum,id,proname,proprice,prostock,proinfo,catecode)
+	values(ark_product_pronum.nextval,#{id},#{proname},#{proprice},#{prostock},#{proinfo},#{catecode})
+	</insert>
+	
+
+	<!-- 상품 수정 -->
+<update id="getProductModify">
+ update ark_product_info set
+ pronum = #{pronum},
+ proname = #{proname},
+ proprice = #{proprice},
+ proinfo = #{proinfo},
+ prostock = #{prostock},
+ catecode = #{catecode} 
+ where pronum = #{pronum}
+</update>
+
+<!-- 상품 삭제 -->
+<delete id="getProductDelete">
+	delete from ark_product_info where pronum=#{pronum}
+</delete>
+
+  </mapper>

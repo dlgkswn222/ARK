@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- 
+  resultType: 자동으로 설정된 리턴타입
+  resultMap : 수동으로 설정된 리턴타입
+   -->
+<mapper namespace="kr.icia.mapper.NewMemberMapper">
+
+<insert id="insert" parameterType="kr.icia.domain.NewMemberVO">
+insert into ARK_newmember2(mb,id,name,pass,phonenum,useremail,userday,uoop,doro,jibun) 
+	values (
+	SEQ_MEMBER.nextval,#{id},#{name},#{pass},#{phonenum},
+	#{useremail},sysdate,#{uoop},#{doro},#{jibun})
+
+ </insert>
+ <insert id="insert2" parameterType="kr.icia.domain.NewMemberVO">
+ insert into tbl_member_auth(id,auth)values(#{id},'ROLE_USER')
+ </insert>
+ 
+ <select id="getMapper" parameterType="String" resultType="int">
+ select count(*) from ARK_NEWMEMBER2 where id=#{id}
+ </select>
+
+ <update id="ImgUpdate" parameterType="kr.icia.domain.NewMemberVO">
+ UPDATE ark_newmember2 SET userImg =#{userImg} where id=#{id};
+ </update>
+ <insert id="img" parameterType="kr.icia.domain.NewMemberVO">
+ insert into ark_img(id)
+values(#{id})	
+ </insert>
+ 
+ <select id="userIdCheck2" resultType="String">
+ select id
+ from ARK_NEWMEMBER2
+ where
+  id=#{id}
+  and
+  useremail=#{useremail}
+  
+ </select>
+ 
+ </mapper>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="kr.icia.mapper.IdPwMapper">
+  
+  <select id="id" resultType="kr.icia.domain.NewMemberVO">
+		select id from ARK_NewMember2 where useremail = #{email}
+	</select>
+	
+<update id="update">
+
+UPDATE ark_newmember2 SET pass=#{pass} where id=#{id}
+
+</update>
+  
+  
+  </mapper>

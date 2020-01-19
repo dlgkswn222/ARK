@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="kr.icia.mapper.ImgMapper">
+ 
+ <insert id="insert">
+insert into ARK_attach (uuid, uploadpath, filename, filetype, ntnum)
+values (#{uuid},#{uploadPath},#{fileName},#{fileType},#{ntnum})
+ </insert>
+ 
+ <delete id ="delete">
+ delete from ARK_attach where uuid=#{uuid}
+ </delete>
+ 
+ <select id="findByNtnum" resultType="kr.icia.domain.ImgVO">
+ select * from ARK_attach where ntnum=#{ntnum} 
+ </select>
+ 
+ <delete id="deleteAll">
+ delete ARK_attach where ntnum=#{ntnum}
+ </delete>
+ 
+ </mapper>

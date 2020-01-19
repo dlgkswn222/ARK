@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="kr.icia.mapper.ShopMapper">
+
+
+
+<sql id="criteria">
+  
+  <trim prefix="(" suffix= ") AND"  prefixOverrides="OR" >
+	<foreach item="type" collection="typeArr">
+	<trim prefix="OR">
+	<choose>
+	<when test="type=='T'.toString()">
+	gdsName like '%'||#{keyword}||'%'
+	</when>
+	
+	
+	</choose>
+	</trim>
+	</foreach>
+	</trim>
+  </sql>
+
+
+
+<select id="list" resultType="kr.icia.domain.GoodsVO">
+select
+    g.gdsNum, g.gdsName, g.cateCode, c.cateCodeRef, c.cateName, gdsPrice, gdsStock, gdsDes, gdsImg, gdsDate, g.gdsImg, g.gdsThumbImg
+        from tbl_goods g
+            inner join goods_category c
+                on g.cateCode = c.cateCode           
+            where g.cateCode = #{cateCode}
+</select>
+
+
+<!-- 카테고리별 상품 리스트 : 1차 분류 -->
+<select id="list1" resultType="kr.icia.domain.GoodsVO">
+ 
+<![CDATA[
+ SELECT  gdsNum, gdsName, cateCode, cateCodeRef,cateName,
+    gdsPrice, gdsStock, gdsDes, gdsDate,gdsImg,gdsThumbImg  
+ from(select   /*+INDEX_DESC(tbl_goods pk_goods)*/ rownum rn,
+    g.gdsNum, g.gdsName, g.cateCode, c.cateCodeRef, c.cateName,
+    gdsPrice, gdsStock, gdsDes, gdsDate, g.gdsImg, g.gdsThumbImg
+        from tbl_goods g
+            inner join goods_category c
+                on g.cateCode = c.cateCode           
+            where g.cateCode = #{cateCode}
+            or c.cateCodeRef = #{cateCodeRef} 
+            and ]]>
+            
+            <include refid="criteria"/>
+             <![CDATA[ 
+            rownum <=#{pageNum}*#{amount})   
+        where rn >(#{pageNum}-1)*#{amount}
+        ]]>
+             
+</select>
+
+<!-- 카테고리별 상품 리스트 : 2차 분류 -->
+<select id="list2" resultType="kr.icia.domain.GoodsVO">
+  SELECT  gdsNum, gdsName, cateCode, cateCodeRef,cateName,
+    gdsPrice, gdsStock, gdsDes, gdsDate,gdsImg,gdsThumbImg  
+  <![CDATA[  from(select  /*+INDEX_DESC(tbl_goods pk_goods)*/ rownum rn,  
+    g.gdsNum, g.gdsName, g.cateCode, c.cateCodeRef, c.cateName,
+    gdsPrice, gdsStock, gdsDes, gdsDate, g.gdsImg, g.gdsThumbImg
+        from tbl_goods g
+            inner join goods_category c
+                on g.cateCode = c.cateCode           
+            where g.cateCode = #{cateCode} 
+            and ]]>
+              
+            <include refid="criteria"/>
+      <![CDATA[     
+            rownum <=#{pageNum}*#{amount})   
+        where rn >(#{pageNum}-1)*#{amount}
+        ]]>
+</select>
+
+<select id="goodsView" resultType="kr.icia.domain.GoodsVO">
+
+select
+g.gdsNum,g.gdsName, g.cateCode, c.cateCodeRef, c.cateName,g.gdsimg,g.gdsthumbimg,g.gdsDes,g.gdsPrice,g.gdsStock,g.like_cnt
+
+from tbl_goods g
+inner join goods_category c
+on g.cateCode = c.cateCode
+
+where g.gdsNum = #{gdsNum}
+
+
+</select>
+
+<!-- 상품 소감(댓글) 작성 -->
+<insert id="registReply">
+ insert into tbl_reply (gdsNum, userId, repNum, repCon)
+     values (#{gdsNum}, #{userId}, tbl_reply_seq.nextval, #{repCon})
+</insert>
+
+<!-- 상품 소감(댓글) 리스트 -->
+<select id="replyList" resultType="kr.icia.domain.ARK_ReplyVO">
+select
+     r.gdsNum, r.userId, r.repNum, r.repCon, r.repDate, r.userid ,m.name as userName,m.mb
+  from tbl_reply r
+     inner join ark_newmember2 m
+         on r.userId = m.id
+     where gdsNum = #{gdsNum}
+</select>
+
+
+<update id="updateReplyCnt">
+	update tbl_goods set replycnt=replycnt+#{amount}
+	where gdsNum=#{gdsNum}
+	</update>	
+
+
+<!-- 상품 소감(댓글) 삭제 -->
+<delete id="deletReply">
+ delete tbl_reply
+     where repNum = #{repNum}
+         and userId = #{userId}
+</delete>
+
+<!-- 아이디 체크 -->
+<select id="replyUserIdCheck" resultType="String">
+ select userId
+  from tbl_reply
+      where repNum = #{repNum}
+</select>
+
+<!-- 상품 소감(댓글) 수정 -->
+<update id="modifyReply">
+ update tbl_reply
+     set
+         repCon = #{repCon}
+     where repNum = #{repNum}
+         and userId = #{userId}
+</update>
+
+<!-- 카트 담기 -->
+<insert id="addCart">
+ insert into tbl_cart (cartNum, userId, gdsNum, cartStock)
+     values (tbl_cart_seq.nextval, #{userId}, #{gdsNum}, #{cartStock})
+</insert>
+
+
+<!-- 카트 리스트 -->
+<select id="cartList" resultType="kr.icia.domain.CartVO">
+ select
+     row_number() over(order by c.cartNum desc) as num,
+     c.cartNum, c.userId, c.gdsNum, c.cartStock, c.addDate,
+     g.gdsName, g.gdsPrice, g.gdsThumbImg
+ from tbl_cart c
+     inner join tbl_goods g
+         on c.gdsNum = g.gdsNum   
+     where c.userId = #{userId}
+</select>
+
+
+<!-- 카트 삭제 -->
+<delete id="deletCart">
+ delete tbl_cart
+     where cartNum = #{cartNum}
+         and userId = #{userId}
+</delete>
+
+<!-- 주문 정보 -->
+<insert id="orderInfo">
+ insert into tbl_order(orderId, userId, orderRec, userAddr1, userAddr2, userAddr3,userAddr4, orderPhon, amount)
+     values(#{orderId}, #{userId}, #{orderRec}, #{userAddr1}, #{userAddr2}, #{userAddr3},#{userAddr4}, #{orderPhon}, #{amount})
+</insert>
+   
+<!-- 주문 상세 정보 --> 
+<insert id="orderInfo_Details">
+ insert into tbl_order_details(orderDetailsNum, orderId, gdsNum, cartStock)
+     select tbl_order_details_seq.nextval, #{orderId}, gdsNum, cartStock
+         from tbl_cart   
+</insert> 
+
+
+<!-- 카트 비우기 -->
+<delete id="cartAllDelete">
+ delete tbl_cart
+     where userId = #{userId}
+</delete>
+
+
+<!-- 특정 유저의 주문 목록 -->
+<select id="orderList" resultType="kr.icia.domain.OrderVO">
+ select
+     orderId, userId, orderRec, userAddr1, userAddr2, userAddr3,userAddr4, orderPhon, amount, orderDate,delivery
+ from tbl_order 
+     where userId = #{userId}
+</select>
+
+
+<!-- 특정 주문 목록 -->
+<select id="orderView" resultType="kr.icia.domain.OrderVO">
+ select
+     o.orderId, o.userId, o.orderRec, o.userAddr1, o.userAddr2, o.userAddr3,o.userAddr4, o.orderPhon, o.amount, o.orderDate,
+     d.orderDetailsNum, d.gdsNum, d.cartStock,
+     g.gdsName, g.gdsThumbImg, g.gdsPrice,o.delivery
+ from tbl_order o
+         inner join tbl_order_details d
+             on o.orderId = d.orderId
+         inner join tbl_goods g
+             on d.gdsNum = g.gdsNum
+     where o.userId = #{userId}
+         and o.orderId = #{orderId}
+</select>
+
+<select id="idread" resultType="int">
+select mb
+from ARK_newmember2
+WHERE id = #{userId};
+
+</select>
+
+
+
+<!-- 좋아요 넣어보기 -->
+
+<update id="like_check">
+    UPDATE liketo
+    SET like_check = like_check + 1 
+    WHERE mno=#{userId} AND boardno=#{gdsNum}
+  </update>
+  
+  <update id="like_check_cancel">
+    UPDATE liketo
+    SET like_check = 0
+    WHERE mno=#{userId} AND boardno=#{gdsNum}
+  </update>
+
+<update id="like_cnt_up">
+update tbl_goods
+
+set LIKE_CNT = LIKE_CNT +1
+
+   WHERE gdsNum= #{boardno}
+</update>
+
+
+<update id="like_cnt_down">
+update tbl_goods
+
+set LIKE_CNT = LIKE_CNT -1
+
+   WHERE gdsNum= #{boardno}
+</update>
+
+
+
+
+<select id="read" resultType="kr.icia.domain.LiketoVO">
+SELECT likeno,
+BOARDNO as gdsNum,
+MNO as userId,
+like_check
+from liketo
+where boardno=#{gdsNum} and mno=#{userId}
+</select>
+
+  <select id="read1" resultType="kr.icia.domain.GoodsVO">
+   SELECT gdsNum,
+gdsName,
+cateCode,
+gdsPrice,
+gdsStock,
+gdsDes,
+gdsImg,
+gdsDate,
+gdsThumbImg,
+like_cnt
+
+FROM tbl_goods
+   WHERE gdsNum= #{boardno}
+ 
+  </select>
+
+<select id="countbyLike" resultType="int">
+   SELECT COUNT(likeno) as cnt
+   FROM liketo
+   WHERE boardno=#{gdsNum} AND mno=#{userId}
+</select>
+
+<insert id="create">
+   INSERT INTO liketo(likeno, boardno, mno, like_check) 
+   VALUES ((SELECT NVL(MAX(likeno), 0) + 1 as likeno FROM liketo),
+                #{gdsNum}, #{userId}, 0)
+</insert>
+
+
+<select id="total1" resultType="int">
+ select count(gdsNum) 
+	from tbl_goods 
+    where  gdsNum >0
+    and cateCode = #{cateCode}
+</select>
+
+<select id="total2" resultType="int">
+  select count(g.gdsNum) 
+	 from tbl_goods g
+            inner join goods_category c
+                on g.cateCode = c.cateCode
+    where  g.gdsNum >0
+    and c.catecoderef = #{cateCode}
+</select>
+
+
+<select id="allStock" resultType="int">
+select NVL(sum(cartstock),0)
+	from tbl_cart 
+    where  gdsNum >0
+    and userId = #{userId}
+</select>
+
+
+<select id="getCateName" resultType="string">
+select catename from goods_category
+where catecode = #{cateCode}
+</select>
+
+
+<select id="getcatecoderef" resultType="int">
+select c.catecoderef 
+from TBL_GOODS G
+INNER JOIN GOODS_CATEGORY C
+ON G.CATECODE = C.CATECODE
+where g.gdsnum = #{gdsNum}
+
+</select>
+
+<select id="roll" resultType="kr.icia.domain.GoodsVO">
+
+select  /*+INDEX_DESC(tbl_goods pk_goods)*/ rownum rn,  
+    g.gdsNum, g.gdsName, g.cateCode, c.cateCodeRef, c.cateName,
+    gdsPrice, gdsStock, gdsDes, gdsDate, g.gdsImg, g.gdsThumbImg
+        from tbl_goods g
+            inner join goods_category c
+                on g.cateCode = c.cateCode
+                where c.catecoderef= #{catecoderef}
+
+</select>
+
+</mapper>

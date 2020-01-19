@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.icia.mapper.NoticeMapper">
+
+    <select id="getList" resultType="kr.icia.domain.NoticeVO">
+	<![CDATA[
+  select 
+  * 
+  from ARK_notice where ntnum >0 
+	]]>
+	</select>
+
+	<insert id="insert">
+		insert into ARK_notice(ntnum,nttitle,ntcontent) 
+		values (seq_list.nextval, #{nttitle},#{ntcontent})
+	</insert>
+	
+	<insert id="insertSelectKey">
+		<selectKey keyProperty="ntnum" order="BEFORE"
+			resultType="long">
+			select seq_list.nextval from dual
+		</selectKey>
+		insert into ARK_notice(ntnum, nttitle, ntcontent) 
+		values (#{ntnum}, #{nttitle}, #{ntcontent})
+	</insert>
+
+	<select id="read" resultType="kr.icia.domain.NoticeVO">
+	    select * from ARK_notice where ntnum=#{ntnum}
+	    
+	    
+ 	</select>	
+
+	<delete id="delete">
+	delete ARK_notice where ntnum=#{ntnum}
+	</delete>
+	
+	<update id="update">
+		update ARK_notice 
+		set nttitle=#{nttitle},
+		ntcontent=#{ntcontent},
+		ntdate=sysdate 
+		where ntnum=#{ntnum}
+	</update>
+	
+	<update id ="viewCnt">
+	update ARK_notice
+	set viewct = viewct +1
+	where ntnum = #{ntnum}
+	</update>
+	
+	<select id="getListWithPaging"
+	resultType="kr.icia.domain.NoticeVO">
+<![CDATA[
+select ntnum, nttitle, ntnum, ntdate,viewct
+from 
+(select /*+INDEX_DESC(ARK_notice pk_ARK_notice) */
+rownum rn, ntnum, nttitle, ntcontent, ntdate,viewct 
+from ARK_notice
+where rownum <= #{pageNum} * #{amount})
+where rn > (#{pageNum}-1) * #{amount}
+]]>
+
+</select>
+	
+	<select id="getTotalCount" resultType="int">	
+	select count(ntnum) from ARK_notice where 
+	ntnum > 0
+	</select>
+	
+</mapper>

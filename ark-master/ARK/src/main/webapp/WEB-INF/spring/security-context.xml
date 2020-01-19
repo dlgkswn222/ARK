@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+
+
+<!-- 암호화 처리, 사용자 계정 정보 처리 -->
+	<bean id="bcryptPasswordEncoder"
+		class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+	<bean id="customUserDetailsService"
+		class="kr.icia.security.CustomUserDetailsService" />
+
+<!-- 웹의 URL 접근 -->
+	<security:http>
+	
+	<security:intercept-url pattern="/ckeditor/**" access="permitAll" />
+	<security:intercept-url pattern="/board/list" access="permitAll"/>
+	<security:intercept-url pattern="/shop/**" access="permitAll"/>
+	<security:intercept-url pattern="/downLoad" access="hasRole('ROLE_MEMBER')"/>
+	<security:intercept-url pattern="board/remove" access="hasRole('ROLE_ADMIN')"/>
+	<security:intercept-url pattern="/admin" access="hasRole('ROLE_ADMIN')"/>
+	
+	
+	<!-- URL 접근이 왔을때, 지정된 패턴의 주소라면 스프링 시큐리티가 가로채서 사용자 권한을 확인하고 허용하거나 거부 함. -->
+		
+		<security:form-login login-page="/customLogin" />
+		<security:remember-me 
+		data-source-ref="dataSource" token-validity-seconds="604800"/>
+		<security:logout logout-url="/customLogout"
+			 invalidate-session="true" 
+			 delete-cookies="remember-me,JSESSIONID"/>
+		</security:http>
+
+<!-- 시큐리티 관리, 위에서 선언한 빈 사용 -->
+	<security:authentication-manager>
+		<security:authentication-provider
+			user-service-ref="customUserDetailsService">
+			<security:password-encoder
+				ref="bcryptPasswordEncoder" />
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+</beans>

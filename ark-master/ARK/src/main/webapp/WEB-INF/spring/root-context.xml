@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<bean id="hikariConfig"
+	class="com.zaxxer.hikari.HikariConfig">
+	<!-- <property name="driverClassName" 
+	value="oracle.jdbc.driver.OracleDriver"></property>
+	<property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:XE"></property> -->
+	
+	<property name="driverClassName" 
+	value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"></property>
+	
+	<property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@localhost:1521:XE"></property>
+	
+	<property name="username" value="ARK"></property>
+	<property name="password" value="1234"></property>
+	</bean>	
+	<!-- bean 객체로 받겠다 -->
+<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" 
+destroy-method="close">
+
+<constructor-arg ref="hikariConfig"></constructor-arg>
+<!-- 생성자 매게변수로 hikariConfig 를 날려주겠다
+다시말해 = 위에있는 소스로 연결해주겠다  -->
+</bean>
+<!-- xml은 html 과 비슷하게 여는 태그와 닫는 태그의 쌍으로 구성 하지만
+ html 코드는 고정되어 있고, xml 태그는 확장성이 무한 그래서 ,
+ 외부설정 정보를 가지고 시스템과 연동할때 사용됨 -->
+
+
+
+<bean id="sqlSessionFactory"
+ class="org.mybatis.spring.SqlSessionFactoryBean">
+ <property name="dataSource" ref="dataSource"></property>
+ 
+ </bean>
+ 
+ <mybatis-spring:scan base-package="kr.icia.mapper"></mybatis-spring:scan>
+<context:component-scan base-package="kr.icia.service"></context:component-scan>
+
+<!-- 스프링 프레임워크에서 해당 패키지를 살펴보고 , 컴포넌트와 관련 
+어노테이션을 만나면 그부분을 자동 객체화 처리 -->
+
+</beans>
+
+
+

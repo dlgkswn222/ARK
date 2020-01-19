@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- 
+  resultType: 자동으로 설정된 리턴타입
+  resultMap : 수동으로 설정된 리턴타입
+   -->
+<mapper namespace="kr.icia.mapper.MemberMapper">
+
+<!-- 
+resultType : 자동으로 설정된 리턴 타입.
+resultMap : 수동으로 설정된 리턴 타입.
+-->
+<resultMap type="kr.icia.domain.NewMemberVO" 
+id="newMemberMap">
+<id property="id" column="id"/>
+<result property="pass" column="pass"/>
+<result property="name" column="name"/>
+<result property="phonenum" column="phonenum"/>
+<result property="useremail" column="useremail"/>
+<result property="userday" column="userday"/>
+<result property="uoop" column="uoop"/>
+<result property="doro" column="doro"/>
+<result property="jibun" column="jibun"/>
+
+<collection property="authList" column="auth" resultMap="authMap"/>
+</resultMap>
+
+<resultMap type="kr.icia.domain.AuthVO" 
+id="authMap">
+<result property="userid" column="userid"/>
+<result property="auth" column="auth" />
+</resultMap>
+
+<!-- 회원 정보 테이블과 회원 권한 테이블을 조인하여
+1개의 타입으로 회원 관련 정보를 리턴 -->
+
+<select id="read" resultMap="newMemberMap">
+select  mem.id, pass, name, phonenum, 
+useremail,userday,uoop,doro,jibun,auth
+from ARK_newmember2 mem left outer join tbl_member_auth auth on 
+mem.id=auth.ID
+where mem.id=#{id}
+</select>
+
+ 
+ 							 
+
+ 
+ 
+ 
+</mapper>
+
+

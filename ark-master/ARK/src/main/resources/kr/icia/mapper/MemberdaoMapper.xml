@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="kr.icia.mapper.MemberdaoMapper">
+  
+  
+  <resultMap type="kr.icia.domain.NewMemberVO" 
+id="newMemberMap">
+<id property="id" column="id"/>
+<result property="mb" column="mb"/>
+<result property="pass" column="pass"/>
+<result property="name" column="name"/>
+<result property="phonenum" column="phonenum"/>
+<result property="useremail" column="useremail"/>
+<result property="userday" column="userday"/>
+<result property="uoop" column="uoop"/>
+<result property="doro" column="doro"/>
+<result property="jibun" column="jibun"/>
+
+<collection property="authList" column="auth" resultMap="authMap"/>
+</resultMap>
+
+
+<resultMap type="kr.icia.domain.UserVO" id="img">
+<result property="gdsimg" column="gdsimg"/>
+<result property="gdsthumbimg" column="gdsthumbimg"/>
+</resultMap>
+
+
+<resultMap type="kr.icia.domain.AuthVO" 
+id="authMap">
+<result property="userid" column="id"/>
+<result property="auth" column="auth" />
+</resultMap>
+  
+  
+  <update id="update">
+  UPDATE ark_newmember2 set pass = #{pass},
+                           phonenum=#{phonenum},
+                           uoop=#{uoop},
+                           jibun=#{jibun},
+                           doro=#{doro},
+                           USERIMG=#{userimg}
+                           
+                           
+                          where id=#{id}
+  </update>
+  
+ 
+ 
+ 
+ <select id="memberList" resultMap="newMemberMap">
+<![CDATA[
+select mb ,mem.id,pass,name, phonenum, 
+useremail,userday,uoop,doro,jibun,auth
+from ARK_newmember2 mem,tbl_member_auth auth
+ 
+where mem.id=auth.id
+]]>
+</select>
+  
+ <update id="imgupdate">
+ UPDATE ark_img set 
+ gdsimg = #{gdsImg},
+ gdsthumbimg=#{gdsThumbImg}
+ 
+ where id=#{id}
+ 
+</update>
+
+ <select id="list" resultType="kr.icia.domain.NewMemberVO" >
+ 
+ select id,
+name,
+pass,
+phonenum,
+useremail,
+userday,
+uoop,
+doro,
+jibun,
+mb,
+userimg
+  from ARK_newmember2 
+  where id =#{userId}
+  
+  </select>
+  
+  
+  
+  <!-- 회원 탈퇴 -->
+<delete id="withdrawal">
+ delete from ark_newmember2
+     where id = #{id}
+         and pass = #{pass}
+</delete>
+  
+  
+  <select id="passCK" resultType="kr.icia.domain.NewMemberVO">
+  select id,pass
+  from ark_newmember2
+  where id=#{id}
+  
+  
+  </select>
+  
+  <delete id="deleteAuth">
+  delete from tbl_member_auth
+     where id = #{id}
+         
+  </delete>
+  
+  
+  <delete id="replyDelete">
+  delete from tbl_reply 
+  where id=#{id}
+  </delete>
+  </mapper>

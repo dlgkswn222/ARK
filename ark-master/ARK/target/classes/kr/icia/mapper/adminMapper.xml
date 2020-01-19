@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.icia.mapper.adminMapper">
+
+
+<sql id="criteria">
+  
+  <trim prefix="(" suffix= ") AND"  prefixOverrides="OR" >
+	<foreach item="type" collection="typeArr">
+	<trim prefix="OR">
+	<choose>
+	<when test="type=='T'.toString()">
+	id like '%'||#{keyword}||'%'
+	</when>
+	
+	<when test="type=='C'.toString()">
+	useremail like '%'||#{keyword}||'%'
+	</when>
+	
+	<when test="type=='W'.toString()">
+	name like '%'||#{keyword}||'%'
+	</when>
+	
+	</choose>
+	</trim>
+	</foreach>
+	</trim>
+  </sql>
+
+
+<sql id="oderCriteria">
+  
+  <trim prefix="(" suffix= ") AND"  prefixOverrides="OR" >
+	<foreach item="type" collection="typeArr">
+	<trim prefix="OR">
+	<choose>
+	<when test="type=='T'.toString()">
+	orderid like '%'||#{keyword}||'%'
+	</when>
+	
+	<when test="type=='C'.toString()">
+	userid like '%'||#{keyword}||'%'
+	</when>
+	
+	<when test="type=='W'.toString()">
+	orderrec like '%'||#{keyword}||'%'
+	</when>
+	
+	</choose>
+	</trim>
+	</foreach>
+	</trim>
+  </sql>
+
+<sql id="goodsListrCk">
+  
+  <trim prefix="(" suffix= ") AND"  prefixOverrides="OR" >
+	<foreach item="type" collection="typeArr">
+	<trim prefix="OR">
+	<choose>
+	<when test="type=='T'.toString()">
+	gdsName like '%'||#{keyword}||'%'
+	</when>
+	
+	<when test="type=='C'.toString()">
+	cateName like '%'||#{keyword}||'%'
+	</when>
+	
+	</choose>
+	</trim>
+	</foreach>
+	</trim>
+  </sql>
+
+
+
+<sql id="ListrCk1">
+  
+  <trim prefix="(" suffix= ") AND"  prefixOverrides="OR" >
+	<foreach item="type" collection="typeArr">
+	<trim prefix="OR">
+	<choose>
+	<when test="type=='T'.toString()">
+	ntnum like '%'||#{keyword}||'%'
+	</when>
+	
+	<when test="type=='C'.toString()">
+	nttitle like '%'||#{keyword}||'%'
+	</when>
+	
+	</choose>
+	</trim>
+	</foreach>
+	</trim>
+  </sql>
+
+
+<sql id="ListrCk">
+  
+  <trim prefix="(" suffix= ") AND"  prefixOverrides="OR" >
+	<foreach item="type" collection="typeArr">
+	<trim prefix="OR">
+	<choose>
+	<when test="type=='T'.toString()">
+	title like '%'||#{keyword}||'%'
+	</when>
+	
+	<when test="type=='C'.toString()">
+	WRITER like '%'||#{keyword}||'%'
+	</when>
+	
+	</choose>
+	</trim>
+	</foreach>
+	</trim>
+  </sql>
+
+
+<resultMap type="kr.icia.domain.NewMemberVO" 
+id="newMemberMap">
+<id property="id" column="ID"/>
+<result property="pass" column="PASS"/>
+<result property="name" column="NAME"/>
+<result property="phonenum" column="PHONENUM"/>
+<result property="useremail" column="USEREMAIL"/>
+<result property="userday" column="USERDAY"/>
+<result property="uoop" column="UOOP"/>
+<result property="doro" column="DORO"/>
+<result property="jibun" column="JIBUN"/>
+
+<result property="userimg" column="USERIMG"/>
+<result property="mb" column="MB"/>
+<collection property="authList" column="auth" resultMap="authMap"/>
+</resultMap>
+
+<resultMap type="kr.icia.domain.AuthVO" 
+id="authMap">
+<result property="userid" column="userid"/>
+<result property="auth" column="auth" />
+</resultMap>
+
+
+
+
+
+<!-- 상품 등록 -->
+<insert id="register">
+<![CDATA[
+insert into tbl_goods (gdsNum,
+gdsName,
+cateCode,
+gdsPrice,
+gdsStock,
+gdsDes,
+gdsImg,
+gdsThumbImg)  
+
+values (tbl_goods_seq.nextval,
+#{gdsName},
+#{cateCode},
+#{gdsPrice},
+#{gdsStock},
+#{gdsDes},
+#{gdsImg},
+#{gdsThumbImg})
+]]>
+</insert>
+
+
+
+
+<select id="Category" resultType="kr.icia.domain.CategoryVO">
+select level, cateName, cateCode, cateCodeRef from goods_category
+    start with cateCodeRef is null connect by prior cateCode = cateCodeRef
+
+</select>
+
+
+<select id="goodsList" resultType="kr.icia.domain.GoodsVO">
+ select
+     g.gdsNum, g.gdsName, g.cateCode, c.cateCodeRef, c.cateName, gdsPrice, gdsStock, gdsDes, gdsImg, gdsDate,
+     g.gdsImg, g.gdsThumbImg ,g.gdsDate
+         from tbl_goods g
+             inner join goods_category c
+                 on g.cateCode = c.cateCode               
+</select>
+
+
+
+<select id="goodsListr" resultType="kr.icia.domain.GoodsVO">
+	<![CDATA[
+	 select gdsNum , gdsName  ,cateCode , gdsPrice  , gdsStock  , gdsDes  , gdsImg  , gdsDate ,gdsThumbImg ,cateCodeRef,cateName
+    from(select /*+INDEX_DESC(tbl_goods pk_goods)*/
+    rownum rn, g.gdsNum , g.gdsName  , g.cateCode , gdsPrice  , gdsStock  , gdsDes  , gdsImg  , gdsDate 
+    , g.gdsThumbImg   , c.cateCodeRef  , c.cateName  
+   
+    from tbl_goods g inner 
+    join goods_category c
+    on g.cateCode = c.cateCode
+    where]]>
+    
+    <include refid="goodsListrCk"/>
+    
+	<![CDATA[
+	rownum <=#{pageNum}*#{amount}) 
+	where rn > (#{pageNum}-1)*#{amount}
+	]]>
+	</select>
+
+
+
+<select id="total" resultType="int">
+		<![CDATA[select count(g.gdsNum) 
+	 from tbl_goods g inner 
+    join goods_category c
+    on g.cateCode = c.cateCode
+    where  ]]>
+    
+      <include refid="goodsListrCk"/>
+      
+ <![CDATA[ 
+    gdsNum >0]]>
+	</select>
+
+
+
+
+
+<!-- 상품 조회 -->
+<select id="goodsView" resultType="kr.icia.domain.GoodsVO">
+ select
+     g.gdsNum, g.gdsName,
+      g.cateCode, 
+      c.cateCodeRef, 
+      c.cateName, 
+      gdsPrice, 
+      gdsStock, 
+     gdsDes,
+     gdsImg,
+     gdsDate,
+     g.gdsThumbImg
+        
+         from tbl_goods g
+             inner join goods_category c
+                 on g.cateCode = c.cateCode          
+            where g.gdsNum = #{gdsNum}
+</select>
+
+
+<update id="goodsModify">
+ update tbl_goods
+     set
+         gdsName = #{gdsName},
+         cateCode = #{cateCode},
+         gdsPrice = #{gdsPrice},
+         gdsStock = #{gdsStock},
+         gdsDes = #{gdsDes},
+        
+         gdsImg = #{gdsImg},
+         gdsThumbImg = #{gdsThumbImg}
+        
+     where gdsNum = ${gdsNum}
+</update>
+
+
+<!-- 상품 삭제 -->
+<delete id="goodsDelete">
+ delete
+     tbl_goods
+ where gdsNum = #{gdsNum}
+</delete>
+
+
+<!-- 모든 유저의 주문 목록 -->
+<select id="orderList" resultType="kr.icia.domain.OrderVO">
+<![CDATA[
+ SELECT orderId, userId, orderRec,userAddr1, userAddr2, userAddr3,userAddr4,
+     orderPhon, amount, orderDate, delivery 
+from( select /*+INDEX_DESC(tbl_order pk_tbl_order)*/
+ROWNUM rn,orderId, userId, orderRec,
+     userAddr1, userAddr2, userAddr3,userAddr4,
+     orderPhon, amount, orderDate, delivery
+    from tbl_order where ]]>
+    
+    <include refid="oderCriteria"/>
+    
+    <![CDATA[
+     ROWNUM <=#{pageNum}*#{amount})
+    where rn > (#{pageNum}-1)*#{amount}]]>
+</select>
+
+<!-- 특정 주문 목록 -->
+<select id="orderView" resultType="kr.icia.domain.OrderVO">
+ select
+     o.orderId, o.userId, o.orderRec,
+     o.userAddr1, o.userAddr2, o.userAddr3,userAddr4,
+     o.orderPhon, o.amount, o.orderDate, o.delivery,
+     d.orderDetailsNum, d.gdsNum, d.cartStock,
+     g.gdsName, g.gdsThumbImg, g.gdsPrice ,o.delivery
+ from tbl_order o
+         inner join tbl_order_details d
+             on o.orderId = d.orderId
+         inner join tbl_goods g
+             on d.gdsNum = g.gdsNum
+     where o.orderId = #{orderId}
+</select>
+
+<!-- 배송 상태 -->
+<update id="delivery">
+ update tbl_order
+     set delivery = #{delivery}
+ where orderId = #{orderId}
+ 
+</update>
+
+
+
+<!-- 상품 수량 조절 -->
+<update id="changeStock">
+ update tbl_goods
+     set gdsStock = gdsStock - #{gdsStock}
+ where gdsNum = #{gdsNum}
+</update>
+
+
+
+<!--환불 상품 수량 조절 -->
+<update id="changeStock2">
+ update tbl_goods
+     set gdsStock = gdsStock + #{gdsStock}
+ where gdsNum = #{gdsNum}
+</update>
+
+
+
+ <!--  모든 소감(댓글) -->
+<select id="allReply" resultType="kr.icia.domain.ARK_ReplyVO">
+ select r.gdsNum, r.userId, r.repNum, r.repCon, r.repDate, 
+      m.name as userName 
+  from tbl_reply r 
+       inner join ark_newmember2 m 
+          on r.userId = m.id 
+ </select>
+
+
+
+
+<!-- 소감(댓글) 지우기 -->
+<delete id="deleteReply">
+ delete tbl_reply
+     where repNum = #{repNum}
+</delete>
+
+<!-- 가입인원 토탈 + 서치 까지-->
+<select id="MemberTotal" resultType="int">
+
+select count(id) 
+
+from ark_newmember2 where
+
+<include refid="criteria"/>
+
+uoop >0
+
+
+</select>
+<!-- 주문내용 토탈 -->
+<select id="orderTotal" resultType="int">
+
+SELECT count(orderid)
+     
+ FROM tbl_order 
+ where
+ <include refid="oderCriteria"/>
+ 
+ USERADDR1 >0 
+</select>
+
+
+
+
+
+<select id="memberList" resultMap="newMemberMap">
+<![CDATA[
+ select 
+	ID, NAME, PASS, PHONENUM, USEREMAIL, USERDAY, UOOP, DORO, JIBUN, MB, USERIMG,auth
+    from(
+    select /*+INDEX_DESC(ark_newmember2 pk_ark_newmember2)*/
+    rownum rn, m.ID, m.NAME, m.PASS, m.PHONENUM, m.USEREMAIL, m.USERDAY, m.UOOP, m.DORO, m.JIBUN, m.MB, m.USERIMG,
+    auth
+    from ark_newmember2 m
+    inner join tbl_member_auth a
+    on m.id = a.id
+    where 
+    ]]>
+    <include refid="criteria"/>
+    <![CDATA[
+	rownum <=#{pageNum}*#{amount})
+	where rn > (#{pageNum}-1)*#{amount}
+	]]>
+</select>
+
+<select id="idList" resultMap="newMemberMap">
+select m.ID,
+NAME,
+PASS,
+PHONENUM,
+USEREMAIL,
+USERDAY,
+UOOP,
+DORO,
+JIBUN,
+MB,
+USERIMG,
+auth
+from ark_newmember2 m
+    inner join tbl_member_auth a
+ on m.id = a.id
+where m.id = #{id}
+
+</select>
+
+<delete id="replycat">
+DELETE FROM tbl_reply WHERE repnum=#{repNum}
+
+</delete>
+
+<update id="levelUp">
+update tbl_member_auth
+     set auth = #{auth} 
+ where id = #{userid}
+</update>
+
+<delete id="oderDL">
+
+DELETE FROM  tbl_order_details
+
+WHERE orderid=#{orderId}
+
+</delete>
+
+
+<delete id="oderDL2">
+
+DELETE FROM tbl_order 
+
+WHERE orderid=#{orderId}
+
+</delete>
+
+
+
+
+<select id="noticeList" resultType="kr.icia.domain.NoticeVO">
+	<![CDATA[
+  select 
+  * 
+  from ARK_notice 
+  where 
+  ]]>
+    <include refid="ListrCk1"/>
+  <![CDATA[
+  ntnum >0 and
+  rownum <=#{pageNum}*#{amount} 
+	]]>
+	</select>
+
+
+ <select id="reviewList" resultType="kr.icia.domain.ReviewVO">
+ <![CDATA[
+  select
+  *
+  from ARK2_review where
+  ]]>
+  <include refid="ListrCk"/>
+  <![CDATA[ num > 0 and
+  rownum <=#{pageNum}*#{amount} 
+  ]]>
+ </select>
+
+<select id="reviewTotal" resultType="int">
+ <![CDATA[ select
+ count(*)
+  from ARK2_review where]]>
+  <include refid="ListrCk"/>
+ <![CDATA[ num>0 ]]>
+</select>
+
+
+
+<select id="noticetotal" resultType="int">
+ <![CDATA[ select
+ count(*)
+  from ark_notice where]]>
+  <include refid="ListrCk1"/>
+ <![CDATA[ ntnum>0 ]]>
+</select>
+
+</mapper>

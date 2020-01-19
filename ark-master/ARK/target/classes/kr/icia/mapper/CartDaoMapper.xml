@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- 인터페이스와 매핑  -->
+  <mapper namespace="kr.icia.mapper.CartDAO"> 
+ 
+ <!-- 1.장바구니 추가-->
+ <insert id="insertCart">
+ insert into tbl_cart(cart_id,product_id,amount)
+ values(
+ seq_cart.nextval,#{userid},#{productid},#{amount})
+ 
+ </insert>
+ 
+ 
+ <!-- 2.장바구니 목록-->
+ <select id="listCart" resultType="">
+ select
+      c.cart_id,
+      c.user_id,
+      p.product_id,
+      m.user_name,
+      p.product_name,
+      c.amount,,
+      p.product_price,
+      (product_price*amount) money 
+ from
+    tbl_member m, tbl_product p , tbl_cart c
+ where m.userid=c.user_id
+ and  p.product_id=c.product_id
+ and c.userid= ${userid}
+ order by
+ c.cart_id
+ </select>
+ <!-- 3.장바구니 전체 금액-->
+ <select id="sumMoney" resultType="int">
+ select nvl(sum(product_price*amount),0) money
+ 
+ from tbl_cart c,tbl_product p
+ where c.product_id = p.product_id and c.userid=${userid}
+ </select>
+ 
+ 
+ <!-- 4.장바구니 수정-->
+ <update id="modiftCart">
+ update tbl_cart
+ set amount = #{amount}
+ where user_id ={userid}
+ and product_id={prodcutid}
+ </update>
+ 
+ 
+ <!-- 5.장바구니 삭제-->
+ <delete id="deleteCart">
+ delete from tbl_cart
+ where cart_id=#{cartid}
+ 
+ </delete>
+ 
+ 
+ <!-- 6.장바구니에 동일한 상품 레코드 확인-->
+ <select id="countCart" resultType="int">
+ select count(*)
+ from tbl_cart
+ where user_id=#{userid}
+ and product_id=#{productid}
+ </select>
+ 
+ 
+ <!-- 7.장바구니에 동일한 상품이 존재하면 수정-->
+ 
+ <update id="updateCart">
+ update tbl_cart
+ set amount = amount+#{amount}
+ where user_id={userid}
+ and product_id={productid}
+ </update>
+ 
+ 
+ 
+ </mapper>

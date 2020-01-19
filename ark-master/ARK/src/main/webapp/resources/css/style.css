@@ -1,0 +1,479 @@
+/*
+	Ex Machina by TEMPLATED
+    templated.co @templatedco
+    Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
+*/
+@charset 'UTF-8';
+
+@font-face {
+	font-family: 'FontAwesome';
+	src: url('font/fontawesome-webfont.eot?v=4.0.1');
+	src: url('font/fontawesome-webfont.eot?#iefix&v=4.0.1')
+		format('embedded-opentype'),
+		url('font/fontawesome-webfont.woff?v=4.0.1') format('woff'),
+		url('font/fontawesome-webfont.ttf?v=4.0.1') format('truetype'),
+		url('font/fontawesome-webfont.svg?v=4.0.1#fontawesomeregular')
+		format('svg');
+	font-weight: normal;
+	font-style: normal
+}
+
+/*********************************************************************************/
+/* Basic                                                                         */
+/*********************************************************************************/
+
+body, table, input, textarea, select, button, th, td, input, select,
+	textarea, th, td, p, dl, dt, dd, li, pre {
+	font-family: -apple-system, BlinkMacSystemFont, Apple SD Gothic Neo,
+		Roboto, Noto Sans CJK KR, Tahoma, 'Noto Sans KR', 'Gmarket Sans',
+		sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	font-weight: 300;
+}
+
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+	text-decoration: none;
+}
+
+hr {
+	border: 0;
+	border-top: solid 1px #ddd;
+}
+
+header {
+	width: 100%;
+}
+
+footer {
+	margin-top: 10px;
+	line-height: 1.7em;
+}
+
+/*********************************************************************************/
+/* Header                                                                        */
+/*********************************************************************************/
+div.ark-header {
+	background: #ffffff;
+}
+
+div.ark-container {
+	width: 100%;
+	position: fixed;
+	padding-bottom: 10px;
+	z-index: 99;
+}
+
+.box_head-content {
+	height: 113px;
+	position: relative;
+	width: 100%;
+	min-width: 1200px;
+	height: 173px;
+	background-color: #fff;
+}
+
+/*********************************************************************************/
+/* Logo                                                                          */
+/*********************************************************************************/
+#logo {
+	float: left;
+	margin: 32px 0 0;
+	position: relative;
+	z-index: 50;
+}
+
+.box_title-logo {
+	position: absolute;
+	left: 17%;
+	top: 14px;
+	width: 100px;
+	height: 60px;
+}
+
+#logo h1 {
+	
+}
+
+#logo a {
+	display: block;
+	text-align: center;
+	text-decoration: none;
+	font-size: 8em;
+	font-weight: 800;
+	color: #000000;
+}
+
+.box_title-logo .link_head {
+	display: inline-block;
+	margin-left: -40px;
+	font-size: 0;
+	vertical-align: top;
+	display: block;
+}
+
+/*********************************************************************************/
+/* Nav                                                                           */
+/*********************************************************************************/
+nav {
+	width: 100%;
+	left: 100%;
+	bottom: 0em;
+	background-color: #ffff;
+}
+
+
+#hd_wrapper {
+	margin: 0 auto;
+	padding: 0;
+	height: 150px;
+	zoom: 1;
+	text-align: center;
+}
+
+nav ul ul {
+	display: none;
+}
+
+nav ul li:hover>ul {
+	display: block;
+}
+
+nav ul {
+	list-style: none;
+	position: relative;
+	display: block;
+	border-radius: 20px;
+	display: inline-block;
+	vertical-align: top;
+	font-size: 0;
+	z-index: 200;
+	align: center;
+}
+
+nav ul:after {
+	content: "";
+	clear: both;
+	display: block;
+}
+
+nav>ul>li {
+	float: left;
+	z-index: 100;
+	position: relative;
+	height: 90px;
+	text-align: center;
+	padding: 60px 0 90px;
+}
+
+nav ul li:hover {
+	background: -webkit-linear-gradient(top, #fff 0%, #5f6975 40%);
+}
+
+nav ul li:hover a {
+	color: #fff;
+}
+
+nav ul li a {
+	float: left;
+	color: #000;
+	line-height: 1em;
+	text-align: center;
+	text-decoration: none;
+	font-size: 20px;
+	font-weight: 900;
+	white-space: nowrap;
+	display: inline-block;
+	padding: 0 32px;
+}
+
+nav ul ul {
+	background: #000000;
+	border-radius: 0px;
+	padding: 20px 0 30px;
+	position: absolute;
+	top: 100%;
+	z-index: 100;
+	border: 1px solid #ddd;
+}
+
+nav ul ul li {
+	margin: 0;
+	float: none;
+	position: relative;
+	padding: 20px 0 30px;
+}
+
+nav ul ul li a {
+	color: #fff;
+}
+
+nav ul ul li a:hover {
+	border: #4b545f;
+	border-top: none;
+}
+
+nav ul ul ul {
+	position: absolute;
+	left: 100%;
+	text-align: conter;
+	top: -2px;
+}
+
+/*********************************************************************************/
+/* Header-menu                                                    */
+/*********************************************************************************/
+.header-menu {
+	right: 20px;
+	top: 15px;
+	width: auto;
+	position: absolute;
+}
+
+.header-menu>tr>td {
+	margin-left: 5px;
+}
+
+/*********************************************************************************/
+/* main( aside + article )                                                       */
+/*********************************************************************************/
+.baby-sub-quick-menu-area {
+	display: inline-block;
+	position: relative;
+	border: none;
+	width: 250px;
+	left: 3%;
+	/*	배너 길이 - 자체 수정  */
+	height: auto;
+	top: 350px;
+	bottom: 30px;
+	z-index: 98;
+	margin-left: 15px;
+}
+
+/*  화면 크키에 따른 스크롤바 위치 변경 - 보류
+@media screen and (height:800px)
+{
+	.baby-sub-quick-menu-area {top:0px;}
+}
+@media screen and (height:801px)
+{
+	.baby-sub-quick-menu-area {top:300px;}
+} */
+.baby-sub-quick-menu-area a {
+	background: #efefef;
+	background: linear-gradient(top, #efefef 0%, #bbbbbb 100%);
+	background: -moz-linear-gradient(top, #efefef 0%, #bbbbbb 100%);
+	background: -webkit-linear-gradient(top, #9cfdf4 0%, #bbbbbb 100%);
+	box-shadow: 0px 0px 9px rgba(0, 0, 0, 0.15);
+	text-align: center;
+	display: block;
+	border-radius: 15px;
+	width: 100%;
+	height: 40px;
+	padding: 10px;
+	margin: 25px 25px 0px 0px;
+}
+
+#article {
+	position: relative;
+	overflow: auto;
+	width: 1920px;
+	height: 834px;
+	left: 50%;
+	margin-left: -960px;
+	padding: 5em 0em 0em 0em;
+}
+
+/*********************************************************************************/
+/* product - register                                                                */
+/*********************************************************************************/
+form.pro-register-form {
+	text-align: left;
+	margin-left: 20px;
+}
+
+div.inputArea {
+	margin-top: 30px;
+}
+
+select.caterory1 {
+	width: 120px;
+}
+
+select.caterory2 {
+	width: 120px;
+}
+
+div.inputArea>label {
+	display: inline-block;
+	width: 70px;
+	padding: 5px;
+}
+
+div.inputArea>label[for='proinfo'] {
+	display: block;
+}
+
+input {
+	width: 276px;
+}
+
+textarea#proinfo {
+	width: 500px;
+	height: 300px;
+}
+
+label {
+	display: inline-block;
+	padding: 5px;
+}
+
+/*********************************************************************************/
+/* product - table                                                                 */
+/*********************************************************************************/
+#productClass {
+	text-align: center;
+}
+
+.prd-list>table {
+	margin: 30px 20px 50px 50px;
+	padding: 10px 10px 15px 15px;
+	text-align: center;
+	border-collapse: separate;
+	border-spacing: 30px;
+}
+
+caption.pro-caption {
+	font-size: 30pt;
+	font-family: 'Roboto Condensed', sans-serif;
+	text-align: left;
+	margin-left: 20px;
+	padding-bottom: 30px;
+}
+
+}
+.prd-list>table>tr {
+	padding-bottom: 30px;
+}
+
+.prd-list>table>tr>td {
+	border: 1px solid #4c4c4c;
+}
+/*********************************************************************************/
+/* productList                                                                   */
+/*********************************************************************************/
+.dsc>a {
+	font-family: 'Roboto Condensed', sans-serif;
+	text-decoration: none;
+	color: #000000;
+}
+
+.dsc>hover:a {
+	
+}
+
+/*********************************************************************************/
+/* Footer                                                                        */
+/*********************************************************************************/
+#footer {
+	text-align: center;
+	background: #c1b3b3;
+}
+
+#footer .container {
+	position: relative;
+	padding: 3em 0em;
+}
+
+#desktop_layout-header.section_header {
+	
+}
+
+.list_usermenu {
+	position: absolute;
+	right: 5%;
+	font-weight: 900;
+}
+
+.list-item {
+	position: relative;
+	display: inline-block;
+	vertical-align: top;
+}
+
+.link_usermenu {
+	display: inline-block;
+	padding: 0;
+	font-size: 15px;
+	color: #000;
+	letter-spacing: -1px;
+	line-height: 32px;
+	vertical-align: top;
+}
+
+.Logout {
+	display: inline-block;
+	padding: 0;
+	font-size: 15px;
+	color: #000;
+	letter-spacing: -1px;
+	line-height: 32px;
+	vertical-align: top;
+}
+
+#desktop_layout-header .box_usermenu .list_usermenu .list-item+.list-item:before
+	{
+	content: '';
+	display: inline-block;
+	width: 2px;
+	height: 16px;
+	margin: 7px 8px 0 8px;
+	background-color: #000;
+	vertical-align: top;
+}
+
+/*********************************************************************************/
+/* 슬라이드                                                                   */
+/*********************************************************************************/
+.section h1 {
+	
+}
+
+.section1 {
+	background-size: 100%;
+}
+
+.section2 {
+	background-size: 100%;
+}
+
+.section3 {
+	background-size: 100%;
+}
+
+.section4 {
+	background-size: 100%;
+}
+
+.container {
+	width: 80%;
+	max-height: 100%;
+	overflow: auto;
+	padding-right: 15px;
+}
+
+#fp-nav.fp-right {
+	right: 10px;
+}
+
+#fp-nav ul li a span, .fp-slidesNav ul li a span {
+	background: #fff;
+}
+
+.slide {
+	
+}
